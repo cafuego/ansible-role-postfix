@@ -1,3 +1,7 @@
 ---
 - name: restart postfix
   service: name=postfix state=restarted
+
+- name: rehash credentials
+  shell: "postmap hash:{{ postfix_relay_credentials }}"
+  notify: restart postfix

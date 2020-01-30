@@ -26,9 +26,14 @@ The state in which the Postfix service should be after this role runs, and wheth
 
 Options for values `inet_interfaces` and `inet_protocols` in the `main.cf` file.
 
-    postfix_relay_to_mailhog: no
+    postfix_relayhost: [smp.google.com]:587
+    postfix_relay_username: user
+    postfix_relay_password: !vault | $ANSIBLE_VAULT;1.1;AES256...
 
-Option to enable relaying to MailHog on the localhost, port 1025. Requires [MailHog](https://github.com/geerlingguy/ansible-role-mailhog) to be installed on localhost.
+Option to enable relaying to a remote host, optionally with smtp authentication. You will need to set Postfix smtp sasl
+configuration values to ensure that the type of authentication you need is available and used.
+
+Relay could also be MailHog on the localhost, port 1025. See [MailHog](https://github.com/geerlingguy/ansible-role-mailhog).
 
 ## Dependencies
 
