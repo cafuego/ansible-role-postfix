@@ -1,5 +1,6 @@
 ---
 postfix_config_file: /etc/postfix/main.cf
+postfix_relay_credentials: /etc/postfix/relay_credentials
 
 postfix_service_state: started
 postfix_service_enabled: true

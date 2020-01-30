@@ -4,6 +4,14 @@
     name: postfix
     state: present
 
+- name: Ensure cyrus-sasl is installed.
+  package:
+    name:
+    - cyrus-sasl-lib
+    - cyrus-sasl-plain
+  state: present
+  when: postfix_relay_username is defined and postfix_relay_password is defined
+
 - name: Update Postfix configuration.
   lineinfile:
     dest: "{{ postfix_config_file }}"
@@ -15,6 +23,25 @@
     - name: inet_protocols
       value: "{{ postfix_inet_protocols }}"
   notify: restart postfix
+
+- name: Enable relay to an external host.
+  lineinfile:
+    dest: "{{ postfix_config_file }}"
+    line: "relayhost = {{ postfix_relayhost }}"
+    regexp: "^relayhost ="
+  when: postfix_relayhost is defined
+  notify: restart postfix
+
+- name: Update Postfix relayhost credentials.
+  tags:
+    - postfix
+  lineinfile:
+    dest: "{{ postfix_relay_credentials }}"
+    line: "{{ postfix_relayhost }} {{ postfix_relay_username }}:{{ postfix_relay_password }}"
+    regexp: "^{{ postfix_relayhost }} "
+    mode: 0640
+  when: postfix_relayhost is defined and postfix_relay_username is defined and postfix_relay_password is defined
+  notify: rehash credentials
 
 - name: Ensure postfix is started and enabled at boot.
   service:
